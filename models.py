@@ -1,7 +1,8 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, create_engine
 from sqlalchemy.orm import relationship, backref
 
+DEBUG=True
 Base = declarative_base()
 
 class User(Base):
@@ -37,3 +38,7 @@ class SequencePose(Base):
 
     sequence = relationship('Sequence', backref=backref('sequencePoses'))
     pose = relationship('Pose', backref=backref('sequencePoses'))
+
+if __name__ == '__main__':
+    engine = create_engine("sqlite:///test.db")
+    Base.metadata.create_all(engine)
