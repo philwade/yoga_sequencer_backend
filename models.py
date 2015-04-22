@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, create_engine
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, backref, sessionmaker
 
 DEBUG=True
 Base = declarative_base()
@@ -18,14 +18,12 @@ class Pose(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     simplename = Column(String)
-    sequencePoses = relationship('SequencePose', backref=backref('pose'))
 
 class Sequence(Base):
     __tablename__ = 'sequence'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    sequencePoses = relationship('SequencePose', backref=backref('sequence'))
 
 class SequencePose(Base):
     __tablename__ = 'sequence_pose'
@@ -39,6 +37,27 @@ class SequencePose(Base):
     sequence = relationship('Sequence', backref=backref('sequencePoses'))
     pose = relationship('Pose', backref=backref('sequencePoses'))
 
+def create_session(engine):
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    return session
+
 if __name__ == '__main__':
     engine = create_engine("sqlite:///test.db")
     Base.metadata.create_all(engine)
+    session = create_session(engine)
+
+    triangle = Pose(
+        name='Utthita Trikonasana',
+        simplename='Triangle',
+    )
+
+    side = Pose(
+            name='Utthita Parsvakonasana',
+            simplename='Extended Side Angle',
+    )
+
+    session.add(triangle)
+    session.add(side)
+    session.commit()
