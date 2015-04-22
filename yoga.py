@@ -4,6 +4,8 @@ from crossdomain import crossdomain
 app = Flask(__name__)
 
 data = {
+    'name' : 'Iyengar Weeks 3 and 4',
+    'duration' : 10,
     'poses' : [
         {
             'id': 0,
