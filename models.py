@@ -19,6 +19,9 @@ class Pose(Base):
     name = Column(String)
     simplename = Column(String)
 
+    def json(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 class Sequence(Base):
     __tablename__ = 'sequence'
 
@@ -37,7 +40,8 @@ class SequencePose(Base):
     sequence = relationship('Sequence', backref=backref('sequencePoses'))
     pose = relationship('Pose', backref=backref('sequencePoses'))
 
-def create_session(engine):
+def create_session():
+    engine = create_engine("sqlite:///test.db")
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
@@ -46,7 +50,7 @@ def create_session(engine):
 if __name__ == '__main__':
     engine = create_engine("sqlite:///test.db")
     Base.metadata.create_all(engine)
-    session = create_session(engine)
+    session = create_session()
 
     triangle = Pose(
         name='Utthita Trikonasana',
