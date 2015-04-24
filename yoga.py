@@ -4,25 +4,6 @@ from crossdomain import crossdomain
 
 app = Flask(__name__)
 
-data = {
-    'name' : 'Iyengar Weeks 3 and 4',
-    'duration' : 10,
-    'poses' : [
-        {
-            'id': 0,
-            'name': 'Utthita Trikonasana',
-            'easy_name': 'Triangle',
-            'time': 5,
-        },
-        {
-            'id': 1,
-            'name': 'Utthita Parsvakonasana',
-            'easy_name': 'Extended Side Angle',
-            'time': 5,
-        },
-    ],
-}
-
 @app.before_request
 def before_request():
     """Make sure we are connected to the database each request."""
@@ -31,13 +12,13 @@ def before_request():
 @app.route('/api/sequence')
 @crossdomain(origin='*')
 def index():
-    return jsonify(data)
+    sequence = g.db_session.query(Sequence).first()
+    return jsonify(sequence.json())
 
 @app.route('/api/pose', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*', headers='accept, content-type')
 def add_pose():
 
-    print request.json
     try:
         id = request.json['id']
     except AttributeError:
@@ -64,5 +45,13 @@ def get_pose(pose_id=None):
         pose = g.db_session.query(Pose).filter_by(id=pose_id).one()
     return jsonify(pose.json())
 
+@app.route('/api/pose/search', methods=['POST', 'OPTIONS'])
+@crossdomain(origin='*', headers='accept, content-type')
+def search():
+    searchTerm = request.json['search']
+    poses = g.db_session.query(Pose).filter(Pose.name.like('%' + searchTerm + '%')).all()
+
+    return jsonify({'results':[pose.json() for pose in poses]})
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)

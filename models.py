@@ -12,6 +12,9 @@ class User(Base):
     username = Column(String)
     password = Column(String)
 
+    def json(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 class Pose(Base):
     __tablename__ = 'pose'
 
@@ -22,11 +25,19 @@ class Pose(Base):
     def json(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
 class Sequence(Base):
     __tablename__ = 'sequence'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+
+    def json(self):
+       json_rep = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+       json_rep['sequencePoses'] = [pose.json() for pose in self.sequencePoses]
+
+       return json_rep
 
 class SequencePose(Base):
     __tablename__ = 'sequence_pose'
@@ -37,8 +48,15 @@ class SequencePose(Base):
     duration = Column(Integer)
     ordinality = Column(Integer)
 
-    sequence = relationship('Sequence', backref=backref('sequencePoses'))
+    sequence = relationship('Sequence', backref=backref('sequencePoses', order_by=ordinality))
     pose = relationship('Pose', backref=backref('sequencePoses'))
+
+    def json(self):
+       json_rep = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+       json_rep['pose'] = self.pose.json()
+
+       return json_rep
 
 def create_session():
     engine = create_engine("sqlite:///test.db")
