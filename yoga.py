@@ -53,5 +53,48 @@ def search():
 
     return jsonify({'results':[pose.json() for pose in poses]})
 
+@app.route('/api/sequence/save', methods=['POST', 'OPTIONS'])
+@crossdomain(origin='*', headers='accept, content-type')
+def save_sequence():
+    jsonsequence = request.json['sequence']
+
+    sequence = Sequence(
+        id = jsonsequence['id'],
+        name = jsonsequence['name'],
+    )
+
+    sequencePoses = [_sequencePose_from_json(sq, sequence) for sq in jsonsequence['sequencePoses']]
+
+    sequence.sequencePoses = sequencePoses
+
+    g.db_session.merge(sequence)
+    g.db_session.commit()
+
+    return jsonify(sequence.json())
+
+def _sequencePose_from_json(jsonsq, sequence):
+    try:
+        id = jsonsq['id']
+    except KeyError:
+        id = None
+
+    sequencePose = SequencePose(
+        id = id,
+        duration = jsonsq['duration'],
+        ordinality = jsonsq['ordinality'],
+        pose = _pose_from_json(jsonsq['pose']),
+        sequence = sequence,
+    )
+
+    return sequencePose
+
+def _pose_from_json(jsonpose):
+    return Pose(
+        id = jsonpose['id'],
+        name = jsonpose['name'],
+        simplename = jsonpose['simplename'],
+    )
+
+
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
