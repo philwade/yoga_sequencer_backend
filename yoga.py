@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, g
 from models import *
+from sqlalchemy import or_
 from crossdomain import crossdomain
 
 app = Flask(__name__)
@@ -53,7 +54,7 @@ def get_pose(pose_id=None):
 @crossdomain(origin='*', headers='accept, content-type')
 def search():
     searchTerm = request.json['search']
-    poses = g.db_session.query(Pose).filter(Pose.name.like('%' + searchTerm + '%')).all()
+    poses = g.db_session.query(Pose).filter(or_(Pose.name.like('%' + searchTerm + '%'), Pose.name.like('%' + searchTerm + '%'))).all()
 
     return jsonify({'results':[pose.json() for pose in poses]})
 
