@@ -10,6 +10,12 @@ def before_request():
     """Make sure we are connected to the database each request."""
     g.db_session = create_session()
 
+@app.route('/api/sequence/list', methods=['GET'])
+@crossdomain(origin='*')
+def sequence_list():
+    sequences = g.db_session.query(Sequence).all()
+    return jsonify({'sequences': [sequence.json() for sequence in sequences]})
+
 @app.route('/api/sequence/<int:sequence_id>', methods=['GET'])
 @app.route('/api/sequence')
 @crossdomain(origin='*')
