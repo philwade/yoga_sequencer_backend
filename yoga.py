@@ -56,6 +56,14 @@ def get_pose(pose_id=None):
         pose = g.db_session.query(Pose).filter_by(id=pose_id).one()
     return jsonify(pose.json())
 
+@app.route('/api/sequencepose/<int:pose_id>', methods=['DELETE'])
+@crossdomain(origin='*')
+def delete_sequencepose(pose_id):
+    pose = g.db_session.query(SequencePose).filter_by(id=pose_id).one()
+    g.db_session.delete(pose)
+    return
+
+
 @app.route('/api/pose/search', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*', headers='accept, content-type')
 def search():
@@ -68,14 +76,17 @@ def search():
 @crossdomain(origin='*', headers='accept, content-type')
 def save_sequence():
     jsonsequence = request.json['sequence']
+    todelete = request.json['toRemove']
+
+    sequencePoses = g.db_session.query(SequencePose).filter(SequencePose.id.in_(todelete)).all()
+    for sequencePose in sequencePoses:
+        g.db_session.delete(sequencePose)
 
     sequence = Sequence(
         id = jsonsequence['id'],
         name = jsonsequence['name'],
     )
-
     sequencePoses = [_sequencePose_from_json(sq, sequence) for sq in jsonsequence['sequencePoses']]
-
     sequence.sequencePoses = sequencePoses
 
     g.db_session.merge(sequence)
