@@ -60,7 +60,7 @@ def get_pose(pose_id=None):
 @crossdomain(origin='*', headers='accept, content-type')
 def search():
     searchTerm = request.json['search']
-    poses = g.db_session.query(Pose).filter(or_(Pose.name.like('%' + searchTerm + '%'), Pose.name.like('%' + searchTerm + '%'))).all()
+    poses = g.db_session.query(Pose).filter(or_(Pose.name.like('%' + searchTerm + '%'), Pose.simplename.like('%' + searchTerm + '%'))).all()
 
     return jsonify({'results':[pose.json() for pose in poses]})
 
