@@ -85,6 +85,8 @@ def save_sequence():
     sequence = Sequence(
         id = jsonsequence['id'],
         name = jsonsequence['name'],
+        description = jsonsequence['description'],
+        default_duration = jsonsequence['default_duration'],
     )
     sequencePoses = [_sequencePose_from_json(sq, sequence) for sq in jsonsequence['sequencePoses']]
     sequence.sequencePoses = sequencePoses

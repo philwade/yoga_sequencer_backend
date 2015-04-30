@@ -31,6 +31,8 @@ class Sequence(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    description = Column(String)
+    default_duration = Column(Integer)
 
     def json(self):
        json_rep = {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -71,17 +73,19 @@ if __name__ == '__main__':
     session = create_session()
 
     triangle = Pose(
-        name='Utthita Trikonasana',
-        simplename='Triangle',
+        name = 'Utthita Trikonasana',
+        simplename = 'Triangle',
     )
 
     side = Pose(
-            name='Utthita Parsvakonasana',
-            simplename='Extended Side Angle',
+        name = 'Utthita Parsvakonasana',
+        simplename = 'Extended Side Angle',
     )
 
     iyengar = Sequence(
-        name='Iyengar',
+        name = 'Iyengar',
+        description = 'A simple sequence',
+        default_duration = 60,
     )
 
     pose1 = SequencePose(
