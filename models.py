@@ -25,6 +25,20 @@ class Pose(Base):
     def json(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+class PoseImage(Base):
+    __tablename__ = 'pose_image'
+
+    id = Column(Integer, primary_key=True)
+    url = Column(String)
+    author = Column(String)
+    license = Column(String)
+    pose_id = Column(Integer, ForeignKey('pose.id'))
+
+    pose = relationship('Pose', backref=backref('PoseImages'))
+
+    def json(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Sequence(Base):
     __tablename__ = 'sequence'
