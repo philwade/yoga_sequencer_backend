@@ -35,8 +35,18 @@ for line in f:
         attribution = json.loads(image_request_url.read())
 
         image_url = response['query']['pages']['-1']['imageinfo'][0]['url']
+
+        description_url = response['query']['pages']['-1']['imageinfo'][0]['descriptionurl']
         author = attribution['query']['pages']['-1']['imageinfo'][0]['extmetadata']['Artist']['value']
         license = attribution['query']['pages']['-1']['imageinfo'][0]['extmetadata']['LicenseUrl']['value']
+
+        image = urlopen(image_url)
+        image_name = name.replace(' ', '')
+        file_extenstion = image_url.split('.')[-1]
+
+        f = open(image_name + '.' + file_extenstion, 'wb')
+        f.write(image.read())
+        f.close()
 
         print image_url
         print author

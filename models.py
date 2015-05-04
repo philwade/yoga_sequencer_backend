@@ -32,6 +32,7 @@ class PoseImage(Base):
     url = Column(String)
     author = Column(String)
     license = Column(String)
+    further_attribution = Column(String)
     pose_id = Column(Integer, ForeignKey('pose.id'))
 
     pose = relationship('Pose', backref=backref('PoseImages'))
