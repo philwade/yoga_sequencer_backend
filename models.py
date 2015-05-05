@@ -24,12 +24,13 @@ class Pose(Base):
 
     def json(self):
 
-       json_rep = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        json_rep = {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-       # this will need to be a wiser selector when we have multiple images
-       json_rep['poseImage'] = self.PoseImages[0].json()
+        # this will need to be a wiser selector when we have multiple images
+        if self.PoseImages:
+            json_rep['poseImage'] = self.PoseImages[0].json()
 
-       return json_rep
+        return json_rep
 
 class PoseImage(Base):
     __tablename__ = 'pose_image'
