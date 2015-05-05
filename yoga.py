@@ -117,6 +117,15 @@ def _pose_from_json(jsonpose):
         id = jsonpose['id'],
         name = jsonpose['name'],
         simplename = jsonpose['simplename'],
+        PoseImages = [_poseimage_from_json(jsonpose['poseImage'])]
+    )
+
+def _poseimage_from_json(jsonposeimage):
+    return PoseImage(
+        id = jsonposeimage['id'],
+        url = jsonposeimage['url'],
+        author = jsonposeimage['author'],
+        further_attribution = jsonposeimage['further_attribution'],
     )
 
 
