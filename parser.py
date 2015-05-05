@@ -57,6 +57,8 @@ for line in f:
             f.write(image.read())
             f.close()
 
+            image_url_path = full_image_path.replace('app/', '')
+
             p = Pose(
                 name = name,
                 simplename = english,
@@ -65,7 +67,7 @@ for line in f:
             s.add(p)
 
             pi = PoseImage(
-                url = full_image_path,
+                url = image_url_path,
                 author = author,
                 license = license,
                 further_attribution = description_url,
