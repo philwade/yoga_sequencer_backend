@@ -94,39 +94,4 @@ if __name__ == '__main__':
     Base.metadata.create_all(engine)
     session = create_session()
 
-    triangle = Pose(
-        name = 'Utthita Trikonasana',
-        simplename = 'Triangle',
-    )
-
-    side = Pose(
-        name = 'Utthita Parsvakonasana',
-        simplename = 'Extended Side Angle',
-    )
-
-    iyengar = Sequence(
-        name = 'Iyengar',
-        description = 'A simple sequence',
-        default_duration = 60,
-    )
-
-    pose1 = SequencePose(
-        sequence = iyengar,
-        pose = side,
-        duration = 60,
-        ordinality = 1,
-    )
-
-    pose2 = SequencePose(
-        sequence = iyengar,
-        pose = triangle,
-        duration = 60,
-        ordinality = 1,
-    )
-
-    session.add(triangle)
-    session.add(side)
-    session.add(iyengar)
-    session.add(pose1)
-    session.add(pose2)
     session.commit()
