@@ -29,64 +29,69 @@ for line in f:
 
     print name, english, image_name
 
-    if image_name != '':
-        image_request_url = url_query.format(image_name.replace(' ', '%20'))
-        attribution_request_url = attribution_query.format(image_name.replace(' ', '%20'))
-        print image_request_url
-        print attribution_request_url
-
-        file_url = urlopen(image_request_url)
-        image_request_url = urlopen(attribution_request_url)
-
-        response = json.loads(file_url.read())
-        attribution = json.loads(image_request_url.read())
-
+    if image_name:
         try:
+            image_request_url = url_query.format(image_name.replace(' ', '%20'))
+            attribution_request_url = attribution_query.format(image_name.replace(' ', '%20'))
+            print image_request_url
+            print attribution_request_url
+
+            file_url = urlopen(image_request_url)
+            image_request_url = urlopen(attribution_request_url)
+
+            response = json.loads(file_url.read())
+            attribution = json.loads(image_request_url.read())
+
             image_url = response['query']['pages']['-1']['imageinfo'][0]['url']
 
-            if image_url:
+            image = urlopen(image_url)
+            image_name = name.replace(' ', '')
+            file_extenstion = image_url.split('.')[-1]
 
-                image = urlopen(image_url)
-                image_name = name.replace(' ', '')
-                file_extenstion = image_url.split('.')[-1]
+            full_image_path = image_path + image_name + '.' + file_extenstion
+            f = open(full_image_path, 'wb')
+            f.write(image.read())
+            f.close()
 
-                full_image_path = image_path + image_name + '.' + file_extenstion
-                f = open(full_image_path, 'wb')
-                f.write(image.read())
-                f.close()
-
-                image_url_path = full_image_path.replace('app/', '')
-            else:
-                image_url_path = 'images/asanas/missingasana.png'
+            image_url_path = full_image_path.replace('app/', '')
 
             description_url = response['query']['pages']['-1']['imageinfo'][0]['descriptionurl']
             author = attribution['query']['pages']['-1']['imageinfo'][0]['extmetadata']['Artist']['value']
             license = attribution['query']['pages']['-1']['imageinfo'][0]['extmetadata']['LicenseUrl']['value']
 
-            p = Pose(
-                name = name,
-                simplename = english,
-            )
-
-            s.add(p)
-
-            pi = PoseImage(
-                url = image_url_path,
-                author = author,
-                license = license,
-                further_attribution = description_url,
-                pose = p,
-            )
-
-            s.add(pi)
-
         except KeyError:
             #dunno what to do here...
             print "BAD KEY"
 
+        p = Pose(
+            name = name,
+            simplename = english,
+        )
+
+        s.add(p)
+
+        pi = PoseImage(
+            url = image_url_path,
+            author = author,
+            license = license,
+            further_attribution = description_url,
+            pose = p,
+        )
+
+        s.add(pi)
+
+
         print image_url
         print author
         print license
+
+    else:
+        p = Pose(
+            name = name,
+            simplename = english,
+        )
+
+        s.add(p)
 
 s.commit()
 

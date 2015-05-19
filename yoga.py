@@ -113,12 +113,18 @@ def _sequencePose_from_json(jsonsq, sequence):
     return sequencePose
 
 def _pose_from_json(jsonpose):
-    return Pose(
+    p = Pose(
         id = jsonpose['id'],
         name = jsonpose['name'],
         simplename = jsonpose['simplename'],
-        PoseImages = [_poseimage_from_json(jsonpose['poseImage'])]
     )
+
+    try:
+        p.PoseImages = [_poseimage_from_json(jsonpose['poseImage'])]
+    except KeyError:
+        pass
+
+    return p
 
 def _poseimage_from_json(jsonposeimage):
     return PoseImage(
