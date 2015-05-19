@@ -44,20 +44,24 @@ for line in f:
         try:
             image_url = response['query']['pages']['-1']['imageinfo'][0]['url']
 
+            if image_url:
+
+                image = urlopen(image_url)
+                image_name = name.replace(' ', '')
+                file_extenstion = image_url.split('.')[-1]
+
+                full_image_path = image_path + image_name + '.' + file_extenstion
+                f = open(full_image_path, 'wb')
+                f.write(image.read())
+                f.close()
+
+                image_url_path = full_image_path.replace('app/', '')
+            else:
+                image_url_path = 'images/asanas/missingasana.png'
+
             description_url = response['query']['pages']['-1']['imageinfo'][0]['descriptionurl']
             author = attribution['query']['pages']['-1']['imageinfo'][0]['extmetadata']['Artist']['value']
             license = attribution['query']['pages']['-1']['imageinfo'][0]['extmetadata']['LicenseUrl']['value']
-
-            image = urlopen(image_url)
-            image_name = name.replace(' ', '')
-            file_extenstion = image_url.split('.')[-1]
-
-            full_image_path = image_path + image_name + '.' + file_extenstion
-            f = open(full_image_path, 'wb')
-            f.write(image.read())
-            f.close()
-
-            image_url_path = full_image_path.replace('app/', '')
 
             p = Pose(
                 name = name,
